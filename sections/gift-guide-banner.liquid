@@ -1,21 +1,16 @@
 {{ 'gift-guide.css' | asset_url | stylesheet_tag }}
 
 {% liquid
-  assign desktop_background = 'none'
-  assign mobile_background = 'none'
-  if section.settings.background_image != blank
-    assign desktop_background = section.settings.background_image | image_url: width: 2400
-  endif
-  if section.settings.mobile_background_image != blank
-    assign mobile_background = section.settings.mobile_background_image | image_url: width: 1200
-  endif
+  assign top_artwork = 'gift-guide-artwork-top.png' | asset_url
+  assign bottom_artwork = 'gift-guide-artwork-bottom.png' | asset_url
 %}
 
 <section
   class="gift-guide gift-guide__banner"
-  style="--gift-background: url('{{ desktop_background }}'); --gift-mobile-background: url('{{ mobile_background }}'); --gift-artwork-opacity: {{ section.settings.artwork_opacity | divided_by: 100.0 }};"
+  style="--gift-artwork-top: url('{{ top_artwork }}'); --gift-artwork-bottom: url('{{ bottom_artwork }}');"
 >
-  <div class="gift-guide__artwork"></div>
+  <div class="gift-guide__artwork gift-guide__artwork--top" aria-hidden="true"></div>
+  <div class="gift-guide__artwork gift-guide__artwork--bottom" aria-hidden="true"></div>
   <div class="gift-guide__nav">
     <a class="gift-guide__brand" href="{{ routes.root_url }}">{{ section.settings.brand }}</a>
     <p class="gift-guide__nav-message">{{ section.settings.nav_message }}</p>

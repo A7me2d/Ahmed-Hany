@@ -15,13 +15,25 @@
 
 .gift-guide__artwork {
   position: absolute;
-  inset: 0;
   z-index: -1;
-  background-image: var(--gift-background);
   background-position: center top;
-  background-repeat: repeat-y;
+  background-repeat: no-repeat;
   background-size: 100% auto;
-  opacity: var(--gift-artwork-opacity, .7);
+  pointer-events: none;
+}
+
+.gift-guide__artwork--top {
+  background-image: var(--gift-artwork-top);
+  inset: 0 0 auto;
+  aspect-ratio: 1440 / 390;
+}
+
+.gift-guide__artwork--bottom {
+  background-image: var(--gift-artwork-bottom);
+  bottom: 0;
+  right: 0;
+  width: min(890px, 62%);
+  aspect-ratio: 890 / 402;
 }
 
 .gift-guide__nav,
@@ -121,7 +133,8 @@
 
 @media (max-width: 749px) {
   .gift-guide__banner { min-height: 690px; }
-  .gift-guide__artwork { background-image: var(--gift-mobile-background, var(--gift-background)); background-position: 60% center; background-size: 760px auto; }
+  .gift-guide__artwork--top { width: 1440px; max-width: none; left: 50%; right: auto; transform: translateX(-50%); }
+  .gift-guide__artwork--bottom { bottom: 0; right: -250px; width: 890px; }
   .gift-guide__nav { grid-template-columns: 1fr auto; min-height: 70px; }
   .gift-guide__nav-message { display: none; }
   .gift-guide__nav-action .gift-guide__button { gap: 9px; min-height: 42px; padding: 10px 13px; }
