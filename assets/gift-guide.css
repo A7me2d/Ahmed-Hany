@@ -18,9 +18,9 @@
   inset: 0;
   z-index: -1;
   background-image: var(--gift-background);
-  background-position: center;
-  background-repeat: repeat;
-  background-size: min(1100px, 100%) auto;
+  background-position: center top;
+  background-repeat: repeat-y;
+  background-size: 100% auto;
   opacity: var(--gift-artwork-opacity, .7);
 }
 
@@ -81,8 +81,10 @@
 }
 
 .gift-guide__copy {
+  background: rgba(248, 248, 246, .94);
+  box-sizing: border-box;
   width: min(540px, 100%);
-  padding: 54px 16px 54px 0;
+  padding: 54px 52px;
 }
 
 .gift-guide__title {
