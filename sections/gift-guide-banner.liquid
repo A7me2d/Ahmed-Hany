@@ -3,6 +3,12 @@
 {% liquid
   assign top_artwork = 'gift-guide-artwork-top.png' | asset_url
   assign bottom_artwork = 'gift-guide-artwork-bottom.png' | asset_url
+  if section.settings.background_image != blank
+    assign top_artwork = section.settings.background_image | image_url: width: 2000
+  endif
+  if section.settings.mobile_background_image != blank
+    assign bottom_artwork = section.settings.mobile_background_image | image_url: width: 1200
+  endif
 %}
 
 <section
@@ -48,8 +54,8 @@
     { "type": "text", "id": "button_label", "label": "Main button label", "default": "SHOP NOW" },
     { "type": "url", "id": "button_link", "label": "Main button link" },
     { "type": "text", "id": "strapline", "label": "Bottom strapline", "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL" },
-    { "type": "image_picker", "id": "background_image", "label": "Desktop background artwork" },
-    { "type": "image_picker", "id": "mobile_background_image", "label": "Mobile background artwork" },
+    { "type": "image_picker", "id": "background_image", "label": "Top background artwork" },
+    { "type": "image_picker", "id": "mobile_background_image", "label": "Bottom background artwork" },
     { "type": "range", "id": "artwork_opacity", "label": "Artwork opacity", "min": 0, "max": 100, "step": 5, "default": 70, "unit": "%" }
   ],
   "presets": [{ "name": "Gift guide banner" }]
