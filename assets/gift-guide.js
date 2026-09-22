@@ -25,7 +25,13 @@ class GiftGuide extends HTMLElement {
     this.querySelector('[data-gift-description]').textContent = product.description || '';
 
     const options = this.querySelector('[data-gift-options]');
-    options.innerHTML = product.options.map((option, index) => {
+    const displayOptions = [...product.options].sort((first, second) => {
+      const firstIsColor = first.name.toLowerCase() === 'color' || first.name.toLowerCase() === 'colour';
+      const secondIsColor = second.name.toLowerCase() === 'color' || second.name.toLowerCase() === 'colour';
+      return Number(secondIsColor) - Number(firstIsColor);
+    });
+    options.innerHTML = displayOptions.map((option) => {
+      const index = product.options.indexOf(option);
       const isColor = option.name.toLowerCase() === 'color' || option.name.toLowerCase() === 'colour';
       if (isColor) {
         return `<div class="gift-modal__option gift-modal__option--color">
