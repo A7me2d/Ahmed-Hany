@@ -61,17 +61,19 @@
   <dialog class="gift-modal" data-gift-dialog aria-label="Product details">
     <div class="gift-modal__panel">
       <button class="gift-modal__close" type="button" data-gift-close aria-label="Close">×</button>
-      <img class="gift-modal__image" data-gift-image src="" alt="" width="800" height="950">
-      <div class="gift-modal__content">
-        <h2 class="gift-modal__title" data-gift-title></h2>
-        <p class="gift-modal__price" data-gift-price></p>
-        <p class="gift-modal__description" data-gift-description></p>
-        <form data-gift-form>
-          <fieldset class="gift-modal__options" data-gift-options></fieldset>
-          <button class="gift-guide__button" type="submit" data-gift-submit>ADD TO CART →</button>
-          <p class="gift-modal__error" data-gift-error role="alert"></p>
-        </form>
+      <div class="gift-modal__product">
+        <img class="gift-modal__image" data-gift-image src="" alt="" width="260" height="310">
+        <div class="gift-modal__content">
+          <h2 class="gift-modal__title" data-gift-title></h2>
+          <p class="gift-modal__price" data-gift-price></p>
+          <p class="gift-modal__description" data-gift-description></p>
+        </div>
       </div>
+      <form data-gift-form>
+        <fieldset class="gift-modal__options" data-gift-options></fieldset>
+        <button class="gift-guide__button gift-modal__submit" type="submit" data-gift-submit>ADD TO CART <span aria-hidden="true">→</span></button>
+        <p class="gift-modal__error" data-gift-error role="alert"></p>
+      </form>
     </div>
   </dialog>
 </gift-guide>

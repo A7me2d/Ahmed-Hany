@@ -25,21 +25,39 @@ class GiftGuide extends HTMLElement {
     this.querySelector('[data-gift-description]').textContent = product.description || '';
 
     const options = this.querySelector('[data-gift-options]');
-    options.innerHTML = product.options.map((option, index) => `
-      <div class="gift-modal__option">
-        <label for="GiftOption-${index}">${option.name}</label>
-        <select id="GiftOption-${index}" data-option-index="${index}">
-          ${option.values.map((value) => `<option value="${this.escape(value)}">${this.escape(value)}</option>`).join('')}
-        </select>
-      </div>
-    `).join('');
+    options.innerHTML = product.options.map((option, index) => {
+      const isColor = option.name.toLowerCase() === 'color' || option.name.toLowerCase() === 'colour';
+      if (isColor) {
+        return `<div class="gift-modal__option gift-modal__option--color">
+          <span class="gift-modal__label">${this.escape(option.name)}</span>
+          <div class="gift-modal__swatches" role="radiogroup" aria-label="${this.escape(option.name)}">
+            ${option.values.map((value, valueIndex) => `<label class="gift-modal__swatch">
+              <input type="radio" name="GiftOption-${index}" data-option-index="${index}" value="${this.escape(value)}" ${valueIndex === 0 ? 'checked' : ''}>
+              <span>${this.escape(value)}</span>
+            </label>`).join('')}
+          </div>
+        </div>`;
+      }
+
+      return `<div class="gift-modal__option">
+        <label class="gift-modal__label" for="GiftOption-${index}">${this.escape(option.name)}</label>
+        <span class="gift-modal__select-wrap">
+          <select id="GiftOption-${index}" data-option-index="${index}">
+            ${option.values.map((value) => `<option value="${this.escape(value)}">${this.escape(value)}</option>`).join('')}
+          </select>
+        </span>
+      </div>`;
+    }).join('');
     this.updateVariant();
     this.dialog.showModal();
   }
 
   updateVariant() {
     if (!this.activeProduct) return;
-    const selected = [...this.querySelectorAll('[data-option-index]')].map((select) => select.value);
+    const selected = this.activeProduct.options.map((option, index) => {
+      const control = this.querySelector(`[data-option-index="${index}"]:checked`) || this.querySelector(`select[data-option-index="${index}"]`);
+      return control?.value;
+    });
     const variant = this.activeProduct.variants.find((item) => item.options.every((value, index) => value === selected[index])) || this.activeProduct.variants[0];
     this.variant = variant;
     this.querySelector('[data-gift-price]').textContent = variant.price;
