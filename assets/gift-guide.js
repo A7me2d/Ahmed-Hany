@@ -13,6 +13,7 @@ class GiftGuide extends HTMLElement {
       if (event.target === this.dialog) this.dialog.close();
     });
     this.form?.addEventListener('change', () => this.updateVariant());
+    this.form?.addEventListener('click', (event) => this.handleOptionClick(event));
     this.form?.addEventListener('submit', (event) => this.addToCart(event));
   }
 
@@ -37,8 +38,8 @@ class GiftGuide extends HTMLElement {
         return `<div class="gift-modal__option gift-modal__option--color">
           <span class="gift-modal__label">${this.escape(option.name)}</span>
           <div class="gift-modal__swatches" role="radiogroup" aria-label="${this.escape(option.name)}">
-            ${option.values.map((value, valueIndex) => `<label class="gift-modal__swatch">
-              <input type="radio" name="GiftOption-${index}" data-option-index="${index}" value="${this.escape(value)}" ${valueIndex === 0 ? 'checked' : ''}>
+            ${option.values.map((value) => `<label class="gift-modal__swatch" style="--gift-swatch-accent: ${this.colorAccent(value)}">
+              <input type="radio" name="GiftOption-${index}" data-option-index="${index}" value="${this.escape(value)}">
               <span>${this.escape(value)}</span>
             </label>`).join('')}
           </div>
@@ -46,12 +47,15 @@ class GiftGuide extends HTMLElement {
       }
 
       return `<div class="gift-modal__option">
-        <label class="gift-modal__label" for="GiftOption-${index}">${this.escape(option.name)}</label>
-        <span class="gift-modal__select-wrap">
-          <select id="GiftOption-${index}" data-option-index="${index}">
-            ${option.values.map((value) => `<option value="${this.escape(value)}">${this.escape(value)}</option>`).join('')}
-          </select>
-        </span>
+        <span class="gift-modal__label">${this.escape(option.name)}</span>
+        <div class="gift-modal__select-wrap" data-gift-select>
+          <button class="gift-modal__select" type="button" data-option-toggle data-option-index="${index}" aria-expanded="false">
+            <span data-option-value>Choose your ${this.escape(option.name.toLowerCase())}</span>
+          </button>
+          <div class="gift-modal__option-list" data-option-list hidden>
+            ${option.values.map((value) => `<button type="button" data-option-choice data-option-index="${index}" value="${this.escape(value)}">${this.escape(value)}</button>`).join('')}
+          </div>
+        </div>
       </div>`;
     }).join('');
     this.updateVariant();
@@ -61,15 +65,45 @@ class GiftGuide extends HTMLElement {
   updateVariant() {
     if (!this.activeProduct) return;
     const selected = this.activeProduct.options.map((option, index) => {
-      const control = this.querySelector(`[data-option-index="${index}"]:checked`) || this.querySelector(`select[data-option-index="${index}"]`);
-      return control?.value;
+      const control = this.querySelector(`[data-option-index="${index}"]:checked`) || this.querySelector(`[data-option-toggle][data-option-index="${index}"]`);
+      return control?.dataset.value || control?.value;
     });
-    const variant = this.activeProduct.variants.find((item) => item.options.every((value, index) => value === selected[index])) || this.activeProduct.variants[0];
+    const variant = selected.includes(undefined)
+      ? null
+      : this.activeProduct.variants.find((item) => item.options.every((value, index) => value === selected[index]));
     this.variant = variant;
-    this.querySelector('[data-gift-price]').textContent = variant.price;
+    this.querySelector('[data-gift-price]').textContent = variant?.price || this.activeProduct.variants[0]?.price || '';
     const button = this.querySelector('[data-gift-submit]');
-    button.disabled = !variant.available;
+    if (!variant) {
+      button.disabled = true;
+      return;
+    }
+    button.disabled = !variant?.available;
     button.textContent = variant.available ? 'ADD TO CART  →' : 'SOLD OUT';
+  }
+
+  handleOptionClick(event) {
+    const toggle = event.target.closest('[data-option-toggle]');
+    if (toggle) {
+      const list = toggle.parentElement.querySelector('[data-option-list]');
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      this.querySelectorAll('[data-option-toggle]').forEach((item) => {
+        item.setAttribute('aria-expanded', 'false');
+        item.parentElement.querySelector('[data-option-list]').hidden = true;
+      });
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+      list.hidden = isOpen;
+      return;
+    }
+
+    const choice = event.target.closest('[data-option-choice]');
+    if (!choice) return;
+    const toggleButton = this.querySelector(`[data-option-toggle][data-option-index="${choice.dataset.optionIndex}"]`);
+    toggleButton.dataset.value = choice.value;
+    toggleButton.querySelector('[data-option-value]').textContent = choice.value;
+    toggleButton.setAttribute('aria-expanded', 'false');
+    choice.parentElement.hidden = true;
+    this.updateVariant();
   }
 
   async addToCart(event) {
@@ -106,6 +140,11 @@ class GiftGuide extends HTMLElement {
     const raw = this.dataset.winterProduct;
     if (!raw) return null;
     return JSON.parse(raw).variants.find((variant) => variant.available);
+  }
+
+  colorAccent(value) {
+    const accents = { blue: '#2460a7', red: '#a21038', grey: '#a7a7a7', gray: '#a7a7a7', white: '#111111', black: '#111111' };
+    return accents[value.toLowerCase()] || '#111111';
   }
 
   escape(value) {
