@@ -21,6 +21,7 @@
         "button_label": "SHOP NOW",
         "button_link": "#gift-products",
         "strapline": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL",
+        "background_image": "shopify://shop_images/Frame.png",
         "artwork_opacity": 70
       }
     },
