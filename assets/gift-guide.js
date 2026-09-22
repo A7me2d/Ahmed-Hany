@@ -1,0 +1,94 @@
+class GiftGuide extends HTMLElement {
+  connectedCallback() {
+    this.dialog = this.querySelector('[data-gift-dialog]');
+    this.form = this.querySelector('[data-gift-form]');
+    this.activeProduct = null;
+
+    this.querySelectorAll('[data-gift-card]').forEach((card) => {
+      card.addEventListener('click', () => this.openProduct(card));
+    });
+
+    this.querySelector('[data-gift-close]')?.addEventListener('click', () => this.dialog.close());
+    this.dialog?.addEventListener('click', (event) => {
+      if (event.target === this.dialog) this.dialog.close();
+    });
+    this.form?.addEventListener('change', () => this.updateVariant());
+    this.form?.addEventListener('submit', (event) => this.addToCart(event));
+  }
+
+  openProduct(card) {
+    this.activeProduct = JSON.parse(card.dataset.product);
+    const product = this.activeProduct;
+    this.querySelector('[data-gift-image]').src = product.image || '';
+    this.querySelector('[data-gift-image]').alt = product.title;
+    this.querySelector('[data-gift-title]').textContent = product.title;
+    this.querySelector('[data-gift-description]').textContent = product.description || '';
+
+    const options = this.querySelector('[data-gift-options]');
+    options.innerHTML = product.options.map((option, index) => `
+      <div class="gift-modal__option">
+        <label for="GiftOption-${index}">${option.name}</label>
+        <select id="GiftOption-${index}" data-option-index="${index}">
+          ${option.values.map((value) => `<option value="${this.escape(value)}">${this.escape(value)}</option>`).join('')}
+        </select>
+      </div>
+    `).join('');
+    this.updateVariant();
+    this.dialog.showModal();
+  }
+
+  updateVariant() {
+    if (!this.activeProduct) return;
+    const selected = [...this.querySelectorAll('[data-option-index]')].map((select) => select.value);
+    const variant = this.activeProduct.variants.find((item) => item.options.every((value, index) => value === selected[index])) || this.activeProduct.variants[0];
+    this.variant = variant;
+    this.querySelector('[data-gift-price]').textContent = variant.price;
+    const button = this.querySelector('[data-gift-submit]');
+    button.disabled = !variant.available;
+    button.textContent = variant.available ? 'ADD TO CART  →' : 'SOLD OUT';
+  }
+
+  async addToCart(event) {
+    event.preventDefault();
+    if (!this.variant?.available) return;
+    const error = this.querySelector('[data-gift-error]');
+    const button = this.querySelector('[data-gift-submit]');
+    button.disabled = true;
+    error.textContent = '';
+
+    const items = [{ id: this.variant.id, quantity: 1 }];
+    const selectedValues = this.variant.options.map((value) => value.toLowerCase());
+    const winterVariant = this.winterVariant;
+    if (selectedValues.includes('black') && selectedValues.includes('medium') && winterVariant?.available) {
+      items.push({ id: winterVariant.id, quantity: 1 });
+    }
+
+    try {
+      const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ items })
+      });
+      if (!response.ok) throw new Error('Unable to add this product to the cart.');
+      this.dialog.close();
+      window.location.assign(window.Shopify.routes.root + 'cart');
+    } catch (exception) {
+      error.textContent = exception.message;
+      button.disabled = false;
+    }
+  }
+
+  get winterVariant() {
+    const raw = this.dataset.winterProduct;
+    if (!raw) return null;
+    return JSON.parse(raw).variants.find((variant) => variant.available);
+  }
+
+  escape(value) {
+    const element = document.createElement('span');
+    element.textContent = value;
+    return element.innerHTML;
+  }
+}
+
+customElements.define('gift-guide', GiftGuide);

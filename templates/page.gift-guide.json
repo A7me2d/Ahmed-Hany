@@ -1,0 +1,25 @@
+{
+  "sections": {
+    "gift_banner": {
+      "type": "gift-guide-banner",
+      "settings": {
+        "nav_link": "#gift-products",
+        "button_link": "#gift-products"
+      }
+    },
+    "gift_products": {
+      "type": "gift-product-grid",
+      "blocks": {
+        "gift_1": { "type": "product", "settings": {} },
+        "gift_2": { "type": "product", "settings": {} },
+        "gift_3": { "type": "product", "settings": {} },
+        "gift_4": { "type": "product", "settings": {} },
+        "gift_5": { "type": "product", "settings": {} },
+        "gift_6": { "type": "product", "settings": {} }
+      },
+      "block_order": ["gift_1", "gift_2", "gift_3", "gift_4", "gift_5", "gift_6"],
+      "settings": {}
+    }
+  },
+  "order": ["gift_banner", "gift_products"]
+}
