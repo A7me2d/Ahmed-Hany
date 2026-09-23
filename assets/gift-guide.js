@@ -12,7 +12,10 @@ class GiftGuide extends HTMLElement {
     this.dialog?.addEventListener('click', (event) => {
       if (event.target === this.dialog) this.dialog.close();
     });
-    this.form?.addEventListener('change', () => this.updateVariant());
+    this.form?.addEventListener('change', (event) => {
+      this.updateColorIndicator(event.target);
+      this.updateVariant();
+    });
     this.form?.addEventListener('click', (event) => this.handleOptionClick(event));
     this.form?.addEventListener('submit', (event) => this.addToCart(event));
   }
@@ -80,6 +83,15 @@ class GiftGuide extends HTMLElement {
     }
     button.disabled = !variant?.available;
     button.textContent = variant.available ? 'ADD TO CART  →' : 'SOLD OUT';
+  }
+
+  updateColorIndicator(control) {
+    if (!control.matches('.gift-modal__swatch input[type="radio"]')) return;
+    const group = control.closest('.gift-modal__swatches');
+    const swatches = [...group.querySelectorAll('.gift-modal__swatch')];
+    const selectedIndex = swatches.findIndex((swatch) => swatch.contains(control));
+    group.style.setProperty('--gift-selected-index', selectedIndex);
+    group.dataset.hasSelection = 'true';
   }
 
   handleOptionClick(event) {

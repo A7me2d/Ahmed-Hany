@@ -129,15 +129,17 @@
 .gift-modal__description { display: -webkit-box; font-size: 12px; line-height: 1.1; margin: 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 5; }
 .gift-modal__options { border: 0; display: grid; gap: 12px; margin: 0 0 47px; padding: 0; }
 .gift-modal__label { display: block; font-size: 13px; font-weight: 400; line-height: 1; margin: 0 0 8px; }
-.gift-modal__swatches { border: 1px solid #666; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.gift-modal__swatch { cursor: pointer; display: block; }
+.gift-modal__swatches { background: #fff; border: 1px solid #666; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); isolation: isolate; overflow: hidden; position: relative; }
+.gift-modal__swatches::before { background: #090909; content: ''; inset: 0 auto 0 0; opacity: 0; position: absolute; transform: translateX(calc(var(--gift-selected-index, 0) * 100%)); transition: opacity 100ms linear, transform 220ms cubic-bezier(.22, 1, .36, 1); width: 50%; z-index: 0; }
+.gift-modal__swatches[data-has-selection="true"]::before { opacity: 1; }
+.gift-modal__swatch { cursor: pointer; display: block; position: relative; z-index: 1; }
 .gift-modal__swatch input { opacity: 0; pointer-events: none; position: absolute; }
-.gift-modal__swatch span { background: #ededed; border: 0; border-right: 1px solid #666; box-sizing: border-box; display: block; font-size: 16px; line-height: 29px; min-height: 30px; padding: 0 12px; position: relative; transition: background-color 160ms cubic-bezier(.25, 1, .5, 1), border-color 160ms cubic-bezier(.25, 1, .5, 1), color 160ms cubic-bezier(.25, 1, .5, 1); }
+.gift-modal__swatch span { background: transparent; border: 0; border-right: 1px solid #666; box-sizing: border-box; display: block; font-size: 16px; line-height: 29px; min-height: 30px; padding: 0 12px; position: relative; transition: color 120ms cubic-bezier(.25, 1, .5, 1); }
 .gift-modal__swatch:last-child span { border-right: 0; }
 .gift-modal__swatch:first-child span::before { background: var(--gift-swatch-accent); content: ''; inset: 0 auto 0 0; position: absolute; width: 4px; }
 .gift-modal__swatch--white span::before { background: #fff; border-right: 1px solid #666; content: ''; display: block; inset: 0 auto 0 0; position: absolute; width: 4px; }
-.gift-modal__swatch--white span { background: #fff; }
-.gift-modal__swatch input:checked + span { background: #090909; border-color: #090909; color: #fff; position: relative; z-index: 1; }
+.gift-modal__swatch--white span { background: transparent; }
+.gift-modal__swatch input:checked + span { color: #fff; }
 .gift-modal__swatch input:checked + span::before { display: none; }
 .gift-modal__select-wrap { display: block; position: relative; }
 .gift-modal__select { appearance: none; background: #eee; border: 1px solid #aaa; border-radius: 0; color: #111; cursor: pointer; display: block; font: inherit; font-size: 12px; min-height: 31px; padding: 6px 38px 6px 12px; position: relative; text-align: left; width: 100%; }
@@ -157,7 +159,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gift-modal__swatch span, .gift-modal__select::after, .gift-modal__option-list, .gift-modal__option-list button { animation: none; transition-duration: .01ms; }
+  .gift-modal__swatches::before, .gift-modal__swatch span, .gift-modal__select::after, .gift-modal__option-list, .gift-modal__option-list button { animation: none; transition-duration: .01ms; }
 }
 
 @media (max-width: 749px) {
