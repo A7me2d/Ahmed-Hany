@@ -47,7 +47,10 @@
   <div class="gift-guide__content">
     <div class="gift-guide__copy">
       <h1 class="gift-guide__title">{{ section.settings.title }}</h1>
-      <div class="gift-guide__text">{{ section.settings.text }}</div>
+      <div class="gift-guide__text">
+        <span class="gift-guide__text--desktop">{{ section.settings.text }}</span>
+        <span class="gift-guide__text--mobile">{{ section.settings.text | split: '.' | first }}.</span>
+      </div>
       {% if section.settings.button_link != blank %}
         <a class="gift-guide__button" href="{{ section.settings.button_link }}">
           {{ section.settings.button_label }} <span class="gift-guide__arrow" aria-hidden="true">→</span>
