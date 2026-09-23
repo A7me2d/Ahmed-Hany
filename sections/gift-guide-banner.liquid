@@ -18,7 +18,7 @@
   <div class="gift-guide__artwork gift-guide__artwork--top" aria-hidden="true"></div>
   <div class="gift-guide__artwork gift-guide__artwork--bottom" aria-hidden="true"></div>
   <div class="gift-guide__nav">
-    <button class="gift-guide__menu-toggle" type="button" aria-label="Open menu" data-gift-menu-toggle>
+    <button class="gift-guide__menu-toggle" type="button" aria-controls="gift-menu-{{ section.id }}" aria-expanded="false" data-gift-menu-toggle>
       <span></span><span></span><span></span>
       <span class="visually-hidden">Open menu</span>
     </button>
@@ -31,7 +31,18 @@
     {% endif %}
   </div>
 
-  <div class="gift-guide__menu-flash" aria-hidden="true" data-gift-menu-flash hidden></div>
+  <nav id="gift-menu-{{ section.id }}" class="gift-guide__mobile-menu" aria-label="Mobile navigation" aria-hidden="true" data-gift-mobile-menu hidden>
+    <div class="gift-guide__mobile-menu-header">
+      <button class="gift-guide__menu-close" type="button" data-gift-menu-close aria-label="Close menu">×</button>
+      <span>{{ section.settings.brand }}</span>
+    </div>
+    <div class="gift-guide__mobile-menu-body">
+      <p>{{ section.settings.nav_message }}</p>
+      {% if section.settings.nav_link != blank %}
+        <a class="gift-guide__button gift-guide__button--sun" href="{{ section.settings.nav_link }}">{{ section.settings.nav_label }} <span class="gift-guide__arrow" aria-hidden="true">→</span></a>
+      {% endif %}
+    </div>
+  </nav>
 
   <div class="gift-guide__content">
     <div class="gift-guide__copy">

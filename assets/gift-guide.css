@@ -64,14 +64,23 @@
 .gift-guide__nav-action { justify-self: end; }
 .gift-guide__menu-toggle { display: none; }
 
-.gift-guide__menu-flash[hidden] { display: none; }
-.gift-guide__menu-flash {
-  background: #090909;
+.gift-guide__mobile-menu[hidden] { display: none; }
+.gift-guide__mobile-menu {
+  background: #f7f7f7;
   inset: 0;
+  opacity: 0;
   position: fixed;
+  transition: opacity 180ms cubic-bezier(.22, 1, .36, 1);
   z-index: 100;
 }
-body.gift-guide-menu-flashing { overflow: hidden; }
+.gift-guide__mobile-menu.is-open { opacity: 1; }
+.gift-guide__mobile-menu-header { align-items: center; box-shadow: 0 2px 4px rgba(0, 0, 0, .15); display: grid; grid-template-columns: 42px 1fr 42px; min-height: 65px; padding-inline: 16px; }
+.gift-guide__mobile-menu-header span { font-size: 22px; font-weight: 700; grid-column: 2; justify-self: center; letter-spacing: .04em; }
+.gift-guide__menu-close { background: none; border: 0; color: inherit; cursor: pointer; font-size: 43px; font-weight: 300; grid-column: 1; line-height: 1; padding: 0; }
+.gift-guide__mobile-menu-body { align-items: center; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px; justify-content: center; min-height: calc(100svh - 65px); padding: 32px 16px; text-align: center; }
+.gift-guide__mobile-menu-body p { font-size: clamp(19px, 5vw, 24px); line-height: 1.25; margin: 0; max-width: 310px; }
+.gift-guide__mobile-menu-body .gift-guide__button { min-width: min(100%, 344px); }
+body.gift-guide-menu-open { overflow: hidden; }
 
 .gift-guide__button {
   align-items: center;
