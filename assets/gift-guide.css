@@ -132,22 +132,31 @@
 .gift-modal__swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .gift-modal__swatch { cursor: pointer; display: block; margin-right: -1px; }
 .gift-modal__swatch input { opacity: 0; pointer-events: none; position: absolute; }
-.gift-modal__swatch span { background: #ededed; border: 1px solid #aaa; box-sizing: border-box; display: block; font-size: 16px; line-height: 29px; min-height: 30px; padding: 0 12px; position: relative; }
+.gift-modal__swatch span { background: #ededed; border: 1px solid #aaa; box-sizing: border-box; display: block; font-size: 16px; line-height: 29px; min-height: 30px; padding: 0 12px; position: relative; transition: background-color 160ms cubic-bezier(.25, 1, .5, 1), border-color 160ms cubic-bezier(.25, 1, .5, 1), color 160ms cubic-bezier(.25, 1, .5, 1); }
 .gift-modal__swatch:first-child span::before { background: var(--gift-swatch-accent); content: ''; inset: -1px auto -1px -1px; position: absolute; width: 4px; }
 .gift-modal__swatch--white span::before { background: #fff; border-right: 1px solid #aaa; content: ''; display: block; inset: -1px auto -1px -1px; position: absolute; width: 4px; }
 .gift-modal__swatch input:checked + span { background: #090909; border-color: #090909; color: #fff; position: relative; z-index: 1; }
 .gift-modal__swatch input:checked + span::before { display: none; }
 .gift-modal__select-wrap { display: block; position: relative; }
 .gift-modal__select { appearance: none; background: #eee; border: 1px solid #aaa; border-radius: 0; color: #111; cursor: pointer; display: block; font: inherit; font-size: 12px; min-height: 31px; padding: 6px 38px 6px 12px; position: relative; text-align: left; width: 100%; }
-.gift-modal__select::after { border-bottom: 1px solid #0b0b0b; border-right: 1px solid #0b0b0b; content: ''; height: 8px; pointer-events: none; position: absolute; right: 16px; top: 9px; transform: rotate(45deg); width: 8px; }
-.gift-modal__select[aria-expanded="true"]::after { top: 13px; transform: rotate(225deg); }
-.gift-modal__option-list { background: #fff; border: 1px solid #aaa; border-top: 0; left: 0; position: absolute; right: 0; top: 100%; z-index: 3; }
-.gift-modal__option-list button { background: #fff; border: 0; color: #111; cursor: pointer; display: block; font: inherit; font-size: 12px; min-height: 29px; padding: 6px 12px; text-align: center; width: 100%; }
+.gift-modal__select::after { border-bottom: 1px solid #0b0b0b; border-right: 1px solid #0b0b0b; content: ''; height: 8px; pointer-events: none; position: absolute; right: 16px; top: 50%; transform: translateY(-65%) rotate(45deg); transition: transform 180ms cubic-bezier(.25, 1, .5, 1); width: 8px; }
+.gift-modal__select[aria-expanded="true"]::after { transform: translateY(-35%) rotate(225deg); }
+.gift-modal__option-list { animation: gift-option-list-in 180ms cubic-bezier(.25, 1, .5, 1); background: #fff; border: 1px solid #aaa; border-top: 0; left: 0; position: absolute; right: 0; top: 100%; z-index: 3; }
+.gift-modal__option-list button { background: #fff; border: 0; color: #111; cursor: pointer; display: block; font: inherit; font-size: 12px; min-height: 29px; padding: 6px 12px; text-align: center; transition: background-color 150ms cubic-bezier(.25, 1, .5, 1), color 150ms cubic-bezier(.25, 1, .5, 1); width: 100%; }
 .gift-modal__option-list button:hover, .gift-modal__option-list button:focus-visible { background: #090909; color: #fff; }
 .gift-modal__submit { display: flex; font-size: 14px; gap: 28px; justify-content: center; min-height: 54px; padding: 13px 22px; width: 100%; }
 .gift-modal__submit span { font-size: 30px; font-weight: 200; line-height: .55; }
 .gift-modal__submit:disabled { cursor: not-allowed; opacity: 1; transform: none; }
 .gift-modal__error { color: #b00020; font-size: 12px; line-height: 1.2; margin: 10px 0 0; min-height: 0; }
+
+@keyframes gift-option-list-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gift-modal__swatch span, .gift-modal__select::after, .gift-modal__option-list, .gift-modal__option-list button { animation: none; transition-duration: .01ms; }
+}
 
 @media (max-width: 749px) {
   .gift-guide__banner { min-height: 690px; }
