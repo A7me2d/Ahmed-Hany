@@ -18,6 +18,10 @@
   <div class="gift-guide__artwork gift-guide__artwork--top" aria-hidden="true"></div>
   <div class="gift-guide__artwork gift-guide__artwork--bottom" aria-hidden="true"></div>
   <div class="gift-guide__nav">
+    <button class="gift-guide__menu-toggle" type="button" aria-controls="gift-menu-{{ section.id }}" aria-expanded="false" data-gift-menu-toggle>
+      <span></span><span></span><span></span>
+      <span class="visually-hidden">Open menu</span>
+    </button>
     <a class="gift-guide__brand" href="{{ routes.root_url }}">{{ section.settings.brand }}</a>
     <p class="gift-guide__nav-message">{{ section.settings.nav_message }}</p>
     {% if section.settings.nav_link != blank %}
@@ -26,6 +30,26 @@
       </a>
     {% endif %}
   </div>
+
+  <nav id="gift-menu-{{ section.id }}" class="gift-guide__mobile-menu" aria-label="Mobile navigation" aria-hidden="true" data-gift-mobile-menu hidden>
+    <div class="gift-guide__mobile-menu-panel">
+      <div class="gift-guide__mobile-menu-header">
+        <span>{{ section.settings.brand }}</span>
+        <button class="gift-guide__menu-close" type="button" data-gift-menu-close aria-label="Close menu">×</button>
+      </div>
+      <div class="gift-guide__mobile-menu-links">
+        {% if section.settings.mobile_menu != blank %}
+          {% for link in section.settings.mobile_menu.links %}
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          {% endfor %}
+        {% else %}
+          <a href="{{ routes.root_url }}">Home</a>
+          <a href="{{ routes.all_products_collection_url }}">Catalog</a>
+          <a href="{{ routes.root_url }}pages/contact">Contact</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
 
   <div class="gift-guide__content">
     <div class="gift-guide__copy">
@@ -49,6 +73,7 @@
     { "type": "text", "id": "nav_message", "label": "Top message", "default": "Find the ideal gift for your loved ones." },
     { "type": "text", "id": "nav_label", "label": "Top button label", "default": "CHOOSE GIFT" },
     { "type": "url", "id": "nav_link", "label": "Top button link" },
+    { "type": "link_list", "id": "mobile_menu", "label": "Mobile menu" },
     { "type": "text", "id": "title", "label": "Heading", "default": "The Gift Guide" },
     { "type": "textarea", "id": "text", "label": "Description", "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season." },
     { "type": "text", "id": "button_label", "label": "Main button label", "default": "SHOP NOW" },
