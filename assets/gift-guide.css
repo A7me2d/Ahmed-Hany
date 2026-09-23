@@ -196,19 +196,57 @@ body.gift-guide-menu-open { overflow: hidden; }
 }
 
 @media (max-width: 749px) {
-  .gift-guide__banner { min-height: 690px; }
-  .gift-guide__artwork--top { width: 1440px; max-width: none; left: 50%; right: auto; transform: translateX(-50%); }
-  .gift-guide__artwork--bottom { bottom: 0; right: -250px; width: 890px; }
+  /* The mobile design has a clear copy area above the illustration, rather
+     than placing the type on top of the artwork. */
+  .gift-guide__banner { min-height: 520px; }
+  .gift-guide__artwork--top { display: none; }
+  .gift-guide__artwork--bottom {
+    bottom: 35px;
+    right: -94px;
+    width: 562px;
+  }
   .gift-guide__nav { background: #f7f7f7; box-shadow: 0 2px 4px rgba(0, 0, 0, .15); grid-template-columns: 42px 1fr 42px; min-height: 65px; position: relative; z-index: 1; }
   .gift-guide__menu-toggle { align-items: center; background: none; border: 0; cursor: pointer; display: grid; gap: 4px; justify-content: center; padding: 10px 8px; width: 42px; }
   .gift-guide__menu-toggle span:not(.visually-hidden) { background: currentColor; display: block; height: 1.5px; width: 20px; }
   .gift-guide__brand { grid-column: 2; justify-self: center; font-size: 22px; }
   .gift-guide__nav-message { display: none; }
   .gift-guide__nav-action { display: none; }
-  .gift-guide__content { min-height: 570px; }
-  .gift-guide__copy { background: rgba(248,248,246,1); padding: 28px 20px; }
-  .gift-guide__title { margin-bottom: 24px; }
-  .gift-guide__text { font-size: 16px; margin-bottom: 28px; }
+  .gift-guide__content {
+    justify-content: flex-start;
+    min-height: 420px;
+    max-width: 100%;
+  }
+  .gift-guide__copy {
+    background: #fff;
+    padding: 45px 24px 0;
+    text-align: center;
+    width: 100%;
+  }
+  .gift-guide__title {
+    font-size: 31px;
+    letter-spacing: -.04em;
+    line-height: 1;
+    margin-bottom: 23px;
+  }
+  .gift-guide__text {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    font-size: 16px;
+    line-height: 1.25;
+    margin: 0 auto;
+    max-width: 305px;
+    overflow: hidden;
+  }
+  .gift-guide__copy .gift-guide__button {
+    bottom: 64px;
+    left: 50%;
+    min-width: 196px;
+    padding-inline: 22px;
+    position: absolute;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
   .gift-grid { padding: 12px; }
   .gift-grid__items { gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gift-card { aspect-ratio: .8; }
