@@ -6,7 +6,7 @@
 }
 
 .gift-guide__banner {
-  min-height: min(900px, 92vh);
+  min-height: 590px;
   position: relative;
   overflow: hidden;
   background: var(--gift-paper);
@@ -98,7 +98,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: calc(min(900px, 92vh) - 140px);
+  min-height: 475px;
   max-width: min(1320px, calc(100% - 48px));
 }
 
