@@ -65,7 +65,10 @@
 
 .gift-guide__button {
   align-items: center;
-  background: var(--gift-button-background, #080808);
+  background-color: var(--gift-button-background, #080808);
+  background-image: linear-gradient(90deg, var(--gift-button-wipe, #fff232) 0 50%, var(--gift-button-background, #080808) 50% 100%);
+  background-position: 100% 0;
+  background-size: 200% 100%;
   border: 1px solid var(--gift-button-background, #080808);
   color: var(--gift-button-color, #fff);
   display: inline-flex;
@@ -79,15 +82,13 @@
   position: relative;
   text-decoration: none;
   text-transform: uppercase;
-  transition: color 120ms cubic-bezier(.25, 1, .5, 1);
+  transition: background-position 320ms cubic-bezier(.22, 1, .36, 1), color 120ms cubic-bezier(.25, 1, .5, 1);
 }
 
-.gift-guide__button::before { background: var(--gift-button-wipe, #fff232); content: ''; inset: 0; position: absolute; transform: translateX(-101%); transition: transform 320ms cubic-bezier(.22, 1, .36, 1); z-index: -1; }
 .gift-guide__button:not(.gift-guide__button--sun):hover, .gift-guide__button:not(.gift-guide__button--sun):focus-visible { color: #111; }
-.gift-guide__button:not(.gift-guide__button--sun):hover::before, .gift-guide__button:not(.gift-guide__button--sun):focus-visible::before { transform: translateX(0); }
+.gift-guide__button:not(.gift-guide__button--sun):hover, .gift-guide__button:not(.gift-guide__button--sun):focus-visible { background-position: 0 0; }
 .gift-guide__button--sun { --gift-button-background: #fff232; --gift-button-color: #111; --gift-button-wipe: #090909; }
-.gift-guide__button--sun:hover, .gift-guide__button--sun:focus-visible { color: #fff; }
-.gift-guide__button--sun:hover::before, .gift-guide__button--sun:focus-visible::before { animation: none; transform: translateX(0); }
+.gift-guide__button--sun:hover, .gift-guide__button--sun:focus-visible { background-position: 0 0; color: #fff; }
 .gift-guide__arrow { font-size: 25px; line-height: 0; }
 
 .gift-guide__content {
@@ -165,7 +166,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gift-guide__button, .gift-guide__button::before, .gift-modal__swatches::before, .gift-modal__swatch span, .gift-modal__select::after, .gift-modal__option-list, .gift-modal__option-list button { animation: none; transition-duration: .01ms; }
+  .gift-guide__button, .gift-modal__swatches::before, .gift-modal__swatch span, .gift-modal__select::after, .gift-modal__option-list, .gift-modal__option-list button { animation: none; transition-duration: .01ms; }
 }
 
 @media (max-width: 749px) {
