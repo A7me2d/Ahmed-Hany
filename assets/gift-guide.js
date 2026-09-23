@@ -169,35 +169,15 @@ class GiftGuide extends HTMLElement {
 
 customElements.define('gift-guide', GiftGuide);
 
-document.querySelectorAll('[data-gift-mobile-menu]').forEach((menu) => {
-  const toggle = document.querySelector(`[aria-controls="${menu.id}"]`);
-  const close = menu.querySelector('[data-gift-menu-close]');
-  let closeTimer;
-
-  const setOpen = (isOpen) => {
-    window.clearTimeout(closeTimer);
-    if (isOpen) {
-      menu.hidden = false;
-      menu.setAttribute('aria-hidden', 'false');
-      toggle?.setAttribute('aria-expanded', 'true');
-      document.body.classList.add('gift-guide-menu-open');
-      requestAnimationFrame(() => menu.classList.add('is-open'));
-      return;
-    }
-
-    menu.classList.remove('is-open');
-    menu.setAttribute('aria-hidden', 'true');
-    toggle?.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('gift-guide-menu-open');
-    closeTimer = window.setTimeout(() => { menu.hidden = true; }, 320);
-  };
-
-  toggle?.addEventListener('click', () => setOpen(true));
-  close?.addEventListener('click', () => setOpen(false));
-  menu.addEventListener('click', (event) => {
-    if (event.target === menu) setOpen(false);
-  });
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !menu.hidden) setOpen(false);
+document.querySelectorAll('[data-gift-menu-flash]').forEach((flash) => {
+  const toggle = flash.parentElement.querySelector('[data-gift-menu-toggle]');
+  toggle?.addEventListener('click', () => {
+    if (!flash.hidden) return;
+    flash.hidden = false;
+    document.body.classList.add('gift-guide-menu-flashing');
+    window.setTimeout(() => {
+      flash.hidden = true;
+      document.body.classList.remove('gift-guide-menu-flashing');
+    }, 520);
   });
 });
