@@ -86,13 +86,9 @@
 .gift-guide__button:not(.gift-guide__button--sun):hover, .gift-guide__button:not(.gift-guide__button--sun):focus-visible { color: #111; }
 .gift-guide__button:not(.gift-guide__button--sun):hover::before, .gift-guide__button:not(.gift-guide__button--sun):focus-visible::before { transform: translateX(0); }
 .gift-guide__button--sun { --gift-button-background: #fff232; --gift-button-color: #111; --gift-button-wipe: #090909; }
-.gift-guide__button--sun:hover::before, .gift-guide__button--sun:focus-visible::before { animation: gift-button-sun-wipe 460ms cubic-bezier(.22, 1, .36, 1); }
+.gift-guide__button--sun:hover, .gift-guide__button--sun:focus-visible { color: #fff; }
+.gift-guide__button--sun:hover::before, .gift-guide__button--sun:focus-visible::before { animation: none; transform: translateX(0); }
 .gift-guide__arrow { font-size: 25px; line-height: 0; }
-
-@keyframes gift-button-sun-wipe {
-  from { transform: translateX(-101%); }
-  to { transform: translateX(101%); }
-}
 
 .gift-guide__content {
   display: flex;
