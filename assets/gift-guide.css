@@ -134,6 +134,7 @@
 .gift-modal__swatch input { opacity: 0; pointer-events: none; position: absolute; }
 .gift-modal__swatch span { background: #ededed; border: 1px solid #aaa; box-sizing: border-box; display: block; font-size: 16px; line-height: 29px; min-height: 30px; padding: 0 12px; position: relative; }
 .gift-modal__swatch:first-child span::before { background: var(--gift-swatch-accent); content: ''; inset: -1px auto -1px -1px; position: absolute; width: 4px; }
+.gift-modal__swatch--white span::before { background: #fff; border-right: 1px solid #aaa; content: ''; display: block; inset: -1px auto -1px -1px; position: absolute; width: 4px; }
 .gift-modal__swatch input:checked + span { background: #090909; border-color: #090909; color: #fff; position: relative; z-index: 1; }
 .gift-modal__swatch input:checked + span::before { display: none; }
 .gift-modal__select-wrap { display: block; position: relative; }

@@ -38,7 +38,7 @@ class GiftGuide extends HTMLElement {
         return `<div class="gift-modal__option gift-modal__option--color">
           <span class="gift-modal__label">${this.escape(option.name)}</span>
           <div class="gift-modal__swatches" role="radiogroup" aria-label="${this.escape(option.name)}">
-            ${option.values.map((value) => `<label class="gift-modal__swatch" style="--gift-swatch-accent: ${this.colorAccent(value)}">
+            ${option.values.map((value) => `<label class="gift-modal__swatch ${value.toLowerCase() === 'white' ? 'gift-modal__swatch--white' : ''}" style="--gift-swatch-accent: ${this.colorAccent(value)}">
               <input type="radio" name="GiftOption-${index}" data-option-index="${index}" value="${this.escape(value)}">
               <span>${this.escape(value)}</span>
             </label>`).join('')}
