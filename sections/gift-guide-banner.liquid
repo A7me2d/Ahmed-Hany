@@ -1,0 +1,83 @@
+{{ 'gift-guide.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign top_artwork = 'gift-guide-artwork-top.png' | asset_url
+  assign bottom_artwork = 'gift-guide-artwork-bottom.png' | asset_url
+  if section.settings.background_image != blank
+    assign top_artwork = section.settings.background_image | image_url: width: 2000
+  endif
+  if section.settings.mobile_background_image != blank
+    assign bottom_artwork = section.settings.mobile_background_image | image_url: width: 1200
+  endif
+%}
+
+<section
+  class="gift-guide gift-guide__banner"
+  style="--gift-artwork-top: url('{{ top_artwork }}'); --gift-artwork-bottom: url('{{ bottom_artwork }}');"
+>
+  <div class="gift-guide__artwork gift-guide__artwork--top" aria-hidden="true"></div>
+  <div class="gift-guide__artwork gift-guide__artwork--bottom" aria-hidden="true"></div>
+  <div class="gift-guide__nav">
+    <button class="gift-guide__menu-toggle" type="button" aria-controls="gift-menu-{{ section.id }}" aria-expanded="false" data-gift-menu-toggle>
+      <span></span><span></span><span></span>
+      <span class="visually-hidden">Open menu</span>
+    </button>
+    <a class="gift-guide__brand" href="{{ routes.root_url }}">{{ section.settings.brand }}</a>
+    <p class="gift-guide__nav-message">{{ section.settings.nav_message }}</p>
+    {% if section.settings.nav_link != blank %}
+      <a class="gift-guide__button gift-guide__button--sun gift-guide__nav-action" href="{{ section.settings.nav_link }}">
+        {{ section.settings.nav_label }} <span class="gift-guide__arrow" aria-hidden="true">→</span>
+      </a>
+    {% endif %}
+  </div>
+
+  <nav id="gift-menu-{{ section.id }}" class="gift-guide__mobile-menu" aria-label="Mobile navigation" aria-hidden="true" data-gift-mobile-menu hidden>
+    <div class="gift-guide__mobile-menu-header">
+      <button class="gift-guide__menu-close" type="button" data-gift-menu-close aria-label="Close menu">×</button>
+      <span>{{ section.settings.brand }}</span>
+    </div>
+    <div class="gift-guide__mobile-menu-body">
+      <p>{{ section.settings.nav_message }}</p>
+      {% if section.settings.nav_link != blank %}
+        <a class="gift-guide__button gift-guide__button--sun" href="{{ section.settings.nav_link }}">{{ section.settings.nav_label }} <span class="gift-guide__arrow" aria-hidden="true">→</span></a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="gift-guide__content">
+    <div class="gift-guide__copy">
+      <h1 class="gift-guide__title">{{ section.settings.title }}</h1>
+      <div class="gift-guide__text">
+        <span class="gift-guide__text--desktop">{{ section.settings.text }}</span>
+        <span class="gift-guide__text--mobile">{{ section.settings.text | split: '.' | first }}.</span>
+      </div>
+      {% if section.settings.button_link != blank %}
+        <a class="gift-guide__button" href="{{ section.settings.button_link }}">
+          {{ section.settings.button_label }} <span class="gift-guide__arrow" aria-hidden="true">→</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  <p class="gift-guide__strapline">{{ section.settings.strapline }}</p>
+</section>
+
+{% schema %}
+{
+  "name": "Gift guide banner",
+  "settings": [
+    { "type": "text", "id": "brand", "label": "Brand", "default": "TISSO VISION" },
+    { "type": "text", "id": "nav_message", "label": "Top message", "default": "Find the ideal gift for your loved ones." },
+    { "type": "text", "id": "nav_label", "label": "Top button label", "default": "CHOOSE GIFT" },
+    { "type": "url", "id": "nav_link", "label": "Top button link" },
+    { "type": "text", "id": "title", "label": "Heading", "default": "The Gift Guide" },
+    { "type": "textarea", "id": "text", "label": "Description", "default": "Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season." },
+    { "type": "text", "id": "button_label", "label": "Main button label", "default": "SHOP NOW" },
+    { "type": "url", "id": "button_link", "label": "Main button link" },
+    { "type": "text", "id": "strapline", "label": "Bottom strapline", "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL" },
+    { "type": "image_picker", "id": "background_image", "label": "Top background artwork" },
+    { "type": "image_picker", "id": "mobile_background_image", "label": "Bottom background artwork" },
+    { "type": "range", "id": "artwork_opacity", "label": "Artwork opacity", "min": 0, "max": 100, "step": 5, "default": 70, "unit": "%" }
+  ],
+  "presets": [{ "name": "Gift guide banner" }]
+}
+{% endschema %}

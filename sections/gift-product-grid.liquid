@@ -1,0 +1,102 @@
+{{ 'gift-guide.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'gift-guide.js' | asset_url }}" defer="defer"></script>
+
+{% capture winter_product_json %}
+  {% if section.settings.winter_jacket != blank %}
+    {
+      "variants": [
+        {% for variant in section.settings.winter_jacket.variants %}
+          { "id": {{ variant.id | json }}, "available": {{ variant.available | json }} }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    }
+  {% endif %}
+{% endcapture %}
+
+<gift-guide class="gift-guide" data-winter-product="{{ winter_product_json | strip | escape }}">
+  <section id="gift-products" class="gift-grid" aria-label="{{ section.settings.heading | escape }}">
+    {% if section.settings.heading != blank %}<h2 class="visually-hidden">{{ section.settings.heading }}</h2>{% endif %}
+    <div class="gift-grid__items">
+      {% for block in section.blocks %}
+        {% assign product = block.settings.product %}
+        {% if product != blank %}
+          {% capture product_json %}
+            {
+              "title": {{ product.title | json }},
+              "description": {{ product.description | strip_html | truncate: 260 | json }},
+              "image": {{ product.featured_image | image_url: width: 1000 | json }},
+              "options": [
+                {% for option in product.options_with_values %}
+                  { "name": {{ option.name | json }}, "values": {{ option.values | json }} }{% unless forloop.last %},{% endunless %}
+                {% endfor %}
+              ],
+              "variants": [
+                {% for variant in product.variants %}
+                  { "id": {{ variant.id | json }}, "available": {{ variant.available | json }}, "price": {{ variant.price | money | json }}, "options": {{ variant.options | json }} }{% unless forloop.last %},{% endunless %}
+                {% endfor %}
+              ]
+            }
+          {% endcapture %}
+          <button
+            class="gift-card"
+            type="button"
+            data-gift-card
+            data-product="{{ product_json | strip | escape }}"
+            style="--hotspot-x: {{ block.settings.hotspot_x }}%; --hotspot-y: {{ block.settings.hotspot_y }}%;"
+            {{ block.shopify_attributes }}
+          >
+            {% if product.featured_image != blank %}
+              {{ product.featured_image | image_url: width: 1000 | image_tag: class: 'gift-card__image', widths: '360, 560, 760, 1000', loading: 'lazy', alt: product.title }}
+            {% else %}
+              {{ 'product-1' | placeholder_svg_tag: 'gift-card__image' }}
+            {% endif %}
+            <span class="gift-card__plus" aria-hidden="true">+</span>
+            <span class="gift-card__name">{{ product.title }}</span>
+          </button>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <dialog class="gift-modal" data-gift-dialog aria-label="Product details">
+    <div class="gift-modal__panel">
+      <button class="gift-modal__close" type="button" data-gift-close aria-label="Close">×</button>
+      <div class="gift-modal__product">
+        <img class="gift-modal__image" data-gift-image src="" alt="" width="260" height="310">
+        <div class="gift-modal__content">
+          <h2 class="gift-modal__title" data-gift-title></h2>
+          <p class="gift-modal__price" data-gift-price></p>
+          <p class="gift-modal__description" data-gift-description></p>
+        </div>
+      </div>
+      <form data-gift-form>
+        <fieldset class="gift-modal__options" data-gift-options></fieldset>
+        <button class="gift-guide__button gift-modal__submit" type="submit" data-gift-submit>ADD TO CART <span aria-hidden="true">→</span></button>
+        <p class="gift-modal__error" data-gift-error role="alert"></p>
+      </form>
+    </div>
+  </dialog>
+</gift-guide>
+
+{% schema %}
+{
+  "name": "Gift product grid",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Accessible heading", "default": "Gift ideas" },
+    { "type": "product", "id": "winter_jacket", "label": "Soft Winter Jacket auto-add product" }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Gift product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "range", "id": "hotspot_x", "label": "Plus horizontal position", "min": 0, "max": 100, "step": 1, "default": 60, "unit": "%" },
+        { "type": "range", "id": "hotspot_y", "label": "Plus vertical position", "min": 0, "max": 100, "step": 1, "default": 50, "unit": "%" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [{ "name": "Gift product grid", "blocks": [{ "type": "product" }, { "type": "product" }, { "type": "product" }, { "type": "product" }, { "type": "product" }, { "type": "product" }] }]
+}
+{% endschema %}
