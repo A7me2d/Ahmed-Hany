@@ -6,7 +6,7 @@
 }
 
 .gift-guide__banner {
-  min-height: 590px;
+  min-height: 700px;
   position: relative;
   overflow: hidden;
   background: var(--gift-paper);
@@ -94,9 +94,10 @@
 .gift-guide__content {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 475px;
+  justify-content: flex-end;
+  min-height: 585px;
   max-width: min(1320px, calc(100% - 48px));
+  padding-bottom: 35px;
 }
 
 .gift-guide__copy {
