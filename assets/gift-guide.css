@@ -71,18 +71,28 @@
   display: inline-flex;
   font: inherit;
   gap: 26px;
+  isolation: isolate;
   justify-content: center;
   min-height: 52px;
+  overflow: hidden;
   padding: 14px 25px;
+  position: relative;
   text-decoration: none;
   text-transform: uppercase;
-  transition: transform .22s ease, background-color .22s ease, color .22s ease;
+  transition: color 120ms cubic-bezier(.25, 1, .5, 1);
 }
 
-.gift-guide__button:hover,
-.gift-guide__button:focus-visible { transform: translateX(5px); }
-.gift-guide__button--sun { --gift-button-background: #fff232; --gift-button-color: #111; }
+.gift-guide__button::before { background: var(--gift-button-wipe, #fff232); content: ''; inset: 0; position: absolute; transform: translateX(-101%); transition: transform 320ms cubic-bezier(.22, 1, .36, 1); z-index: -1; }
+.gift-guide__button:not(.gift-guide__button--sun):hover, .gift-guide__button:not(.gift-guide__button--sun):focus-visible { color: #111; }
+.gift-guide__button:not(.gift-guide__button--sun):hover::before, .gift-guide__button:not(.gift-guide__button--sun):focus-visible::before { transform: translateX(0); }
+.gift-guide__button--sun { --gift-button-background: #fff232; --gift-button-color: #111; --gift-button-wipe: #090909; }
+.gift-guide__button--sun:hover::before, .gift-guide__button--sun:focus-visible::before { animation: gift-button-sun-wipe 460ms cubic-bezier(.22, 1, .36, 1); }
 .gift-guide__arrow { font-size: 25px; line-height: 0; }
+
+@keyframes gift-button-sun-wipe {
+  from { transform: translateX(-101%); }
+  to { transform: translateX(101%); }
+}
 
 .gift-guide__content {
   display: flex;
@@ -159,7 +169,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gift-modal__swatches::before, .gift-modal__swatch span, .gift-modal__select::after, .gift-modal__option-list, .gift-modal__option-list button { animation: none; transition-duration: .01ms; }
+  .gift-guide__button, .gift-guide__button::before, .gift-modal__swatches::before, .gift-modal__swatch span, .gift-modal__select::after, .gift-modal__option-list, .gift-modal__option-list button { animation: none; transition-duration: .01ms; }
 }
 
 @media (max-width: 749px) {
