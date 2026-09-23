@@ -117,7 +117,8 @@ class GiftGuide extends HTMLElement {
     const items = [{ id: this.variant.id, quantity: 1 }];
     const selectedValues = this.variant.options.map((value) => value.toLowerCase());
     const winterVariant = this.winterVariant;
-    if (selectedValues.includes('black') && selectedValues.includes('medium') && winterVariant?.available) {
+    const hasMediumSize = selectedValues.includes('medium') || selectedValues.includes('m');
+    if (selectedValues.includes('black') && hasMediumSize && winterVariant?.available) {
       items.push({ id: winterVariant.id, quantity: 1 });
     }
 
