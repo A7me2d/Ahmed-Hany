@@ -13,6 +13,17 @@ class GiftGuide extends HTMLElement {
     );
     this.dialog?.addEventListener("click", (event) => {
       if (event.target === this.dialog) this.dialog.close();
+      if (!event.target.closest("[data-gift-select]")) this.closeOptionLists();
+    });
+    this.dialog?.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        this.querySelector('[data-option-toggle][aria-expanded="true"]')
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeOptionLists();
+      }
     });
     this.form?.addEventListener("change", (event) => {
       this.updateColorIndicator(event.target);
@@ -132,10 +143,22 @@ class GiftGuide extends HTMLElement {
     if (toggle) {
       const list = toggle.parentElement.querySelector("[data-option-list]");
       const isOpen = toggle.getAttribute("aria-expanded") === "true";
-      this.querySelectorAll("[data-option-toggle]").forEach((item) => {
-        item.setAttribute("aria-expanded", "false");
-        item.parentElement.querySelector("[data-option-list]").hidden = true;
-      });
+      this.closeOptionLists();
+      if (!isOpen) {
+        // Keep the Figma dropdown below the control unless the visible dialog
+        // has too little space. The list scrolls internally without moving the panel.
+        const controlBounds = toggle.getBoundingClientRect();
+        const dialogBounds = this.dialog.getBoundingClientRect();
+        const below = Math.max(
+          0,
+          dialogBounds.bottom - controlBounds.bottom - 8,
+        );
+        const above = Math.max(0, controlBounds.top - dialogBounds.top - 8);
+        const desiredHeight = Math.min(100, list.children.length * 32);
+        const opensAbove = below < desiredHeight && above > below;
+        toggle.parentElement.dataset.placement = opensAbove ? "above" : "below";
+        list.style.maxHeight = `${Math.min(desiredHeight, Math.max(32, opensAbove ? above : below))}px`;
+      }
       toggle.setAttribute("aria-expanded", String(!isOpen));
       list.hidden = isOpen;
       return;
@@ -152,6 +175,13 @@ class GiftGuide extends HTMLElement {
     toggleButton.setAttribute("aria-expanded", "false");
     choice.parentElement.hidden = true;
     this.updateVariant();
+  }
+
+  closeOptionLists() {
+    this.querySelectorAll("[data-option-toggle]").forEach((toggle) => {
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.parentElement.querySelector("[data-option-list]").hidden = true;
+    });
   }
 
   async addToCart(event) {
