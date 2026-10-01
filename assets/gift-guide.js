@@ -1,66 +1,97 @@
 class GiftGuide extends HTMLElement {
   connectedCallback() {
-    this.dialog = this.querySelector('[data-gift-dialog]');
-    this.form = this.querySelector('[data-gift-form]');
+    this.dialog = this.querySelector("[data-gift-dialog]");
+    this.form = this.querySelector("[data-gift-form]");
     this.activeProduct = null;
 
-    this.querySelectorAll('[data-gift-card]').forEach((card) => {
-      card.addEventListener('click', () => this.openProduct(card));
+    this.querySelectorAll("[data-gift-card]").forEach((card) => {
+      card.addEventListener("click", () => this.openProduct(card));
     });
 
-    this.querySelector('[data-gift-close]')?.addEventListener('click', () => this.dialog.close());
-    this.dialog?.addEventListener('click', (event) => {
+    this.querySelector("[data-gift-close]")?.addEventListener("click", () =>
+      this.dialog.close(),
+    );
+    this.dialog?.addEventListener("click", (event) => {
       if (event.target === this.dialog) this.dialog.close();
+      if (!event.target.closest("[data-gift-select]")) this.closeOptionLists();
     });
-    this.form?.addEventListener('change', (event) => {
+    this.dialog?.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        this.querySelector('[data-option-toggle][aria-expanded="true"]')
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.closeOptionLists();
+      }
+    });
+    this.form?.addEventListener("change", (event) => {
       this.updateColorIndicator(event.target);
       this.updateVariant();
     });
-    this.form?.addEventListener('click', (event) => this.handleOptionClick(event));
-    this.form?.addEventListener('submit', (event) => this.addToCart(event));
+    this.form?.addEventListener("click", (event) =>
+      this.handleOptionClick(event),
+    );
+    this.form?.addEventListener("submit", (event) => this.addToCart(event));
   }
 
   openProduct(card) {
     this.activeProduct = JSON.parse(card.dataset.product);
     const product = this.activeProduct;
-    this.querySelector('[data-gift-image]').src = product.image || '';
-    this.querySelector('[data-gift-image]').alt = product.title;
-    this.querySelector('[data-gift-title]').textContent = product.title;
-    this.querySelector('[data-gift-description]').textContent = product.description || '';
+    this.querySelector("[data-gift-image]").src = product.image || "";
+    this.querySelector("[data-gift-image]").alt = product.title;
+    this.querySelector("[data-gift-title]").textContent = product.title;
+    this.querySelector("[data-gift-description]").textContent =
+      product.description || "";
+    this.querySelector("[data-gift-error]").textContent = "";
 
-    const options = this.querySelector('[data-gift-options]');
+    const options = this.querySelector("[data-gift-options]");
     const displayOptions = [...product.options].sort((first, second) => {
-      const firstIsColor = first.name.toLowerCase() === 'color' || first.name.toLowerCase() === 'colour';
-      const secondIsColor = second.name.toLowerCase() === 'color' || second.name.toLowerCase() === 'colour';
+      const firstIsColor =
+        first.name.toLowerCase() === "color" ||
+        first.name.toLowerCase() === "colour";
+      const secondIsColor =
+        second.name.toLowerCase() === "color" ||
+        second.name.toLowerCase() === "colour";
       return Number(secondIsColor) - Number(firstIsColor);
     });
-    options.innerHTML = displayOptions.map((option) => {
-      const index = product.options.indexOf(option);
-      const isColor = option.name.toLowerCase() === 'color' || option.name.toLowerCase() === 'colour';
-      if (isColor) {
-        return `<div class="gift-modal__option gift-modal__option--color">
+    options.innerHTML = displayOptions
+      .map((option) => {
+        const index = product.options.indexOf(option);
+        const isColor =
+          option.name.toLowerCase() === "color" ||
+          option.name.toLowerCase() === "colour";
+        if (isColor) {
+          return `<div class="gift-modal__option gift-modal__option--color">
           <span class="gift-modal__label">${this.escape(option.name)}</span>
           <div class="gift-modal__swatches" role="radiogroup" aria-label="${this.escape(option.name)}">
-            ${option.values.map((value) => `<label class="gift-modal__swatch ${value.toLowerCase() === 'white' ? 'gift-modal__swatch--white' : ''}" style="--gift-swatch-accent: ${this.colorAccent(value)}">
+            ${option.values
+              .map(
+                (
+                  value,
+                ) => `<label class="gift-modal__swatch ${value.toLowerCase() === "white" ? "gift-modal__swatch--white" : ""}" style="--gift-swatch-accent: ${this.colorAccent(value)}">
               <input type="radio" name="GiftOption-${index}" data-option-index="${index}" value="${this.escape(value)}">
               <span>${this.escape(value)}</span>
-            </label>`).join('')}
+            </label>`,
+              )
+              .join("")}
           </div>
         </div>`;
-      }
+        }
 
-      return `<div class="gift-modal__option">
+        return `<div class="gift-modal__option">
         <span class="gift-modal__label">${this.escape(option.name)}</span>
         <div class="gift-modal__select-wrap" data-gift-select>
           <button class="gift-modal__select" type="button" data-option-toggle data-option-index="${index}" aria-expanded="false">
             <span data-option-value>Choose your ${this.escape(option.name.toLowerCase())}</span>
           </button>
           <div class="gift-modal__option-list" data-option-list hidden>
-            ${option.values.map((value) => `<button type="button" data-option-choice data-option-index="${index}" value="${this.escape(value)}">${this.escape(value)}</button>`).join('')}
+            ${option.values.map((value) => `<button type="button" data-option-choice data-option-index="${index}" value="${this.escape(value)}">${this.escape(value)}</button>`).join("")}
           </div>
         </div>
       </div>`;
-    }).join('');
+      })
+      .join("");
     this.updateVariant();
     this.dialog.showModal();
   }
@@ -68,81 +99,127 @@ class GiftGuide extends HTMLElement {
   updateVariant() {
     if (!this.activeProduct) return;
     const selected = this.activeProduct.options.map((option, index) => {
-      const control = this.querySelector(`[data-option-index="${index}"]:checked`) || this.querySelector(`[data-option-toggle][data-option-index="${index}"]`);
+      const control =
+        this.querySelector(`[data-option-index="${index}"]:checked`) ||
+        this.querySelector(
+          `[data-option-toggle][data-option-index="${index}"]`,
+        );
       return control?.dataset.value || control?.value;
     });
     const variant = selected.includes(undefined)
       ? null
-      : this.activeProduct.variants.find((item) => item.options.every((value, index) => value === selected[index]));
+      : this.activeProduct.variants.find((item) =>
+          item.options.every((value, index) => value === selected[index]),
+        );
     this.variant = variant;
-    this.querySelector('[data-gift-price]').textContent = variant?.price || this.activeProduct.variants[0]?.price || '';
-    const button = this.querySelector('[data-gift-submit]');
+    this.querySelector("[data-gift-price]").textContent =
+      variant?.price || this.activeProduct.variants[0]?.price || "";
+    const button = this.querySelector("[data-gift-submit]");
+    const label = button.querySelector("[data-gift-submit-label]");
+    const arrow = button.querySelector(".gift-guide__arrow");
+    label.textContent =
+      !variant || variant.available ? "ADD TO CART" : "SOLD OUT";
+    arrow.toggleAttribute("hidden", Boolean(variant && !variant.available));
     if (!variant) {
       button.disabled = true;
       return;
     }
     button.disabled = !variant?.available;
-    button.textContent = variant.available ? 'ADD TO CART  →' : 'SOLD OUT';
   }
 
   updateColorIndicator(control) {
     if (!control.matches('.gift-modal__swatch input[type="radio"]')) return;
-    const group = control.closest('.gift-modal__swatches');
-    const swatches = [...group.querySelectorAll('.gift-modal__swatch')];
-    const selectedIndex = swatches.findIndex((swatch) => swatch.contains(control));
-    group.style.setProperty('--gift-selected-index', selectedIndex);
-    group.dataset.hasSelection = 'true';
+    const group = control.closest(".gift-modal__swatches");
+    const swatches = [...group.querySelectorAll(".gift-modal__swatch")];
+    const selectedIndex = swatches.findIndex((swatch) =>
+      swatch.contains(control),
+    );
+    group.style.setProperty("--gift-selected-index", selectedIndex);
+    group.dataset.hasSelection = "true";
   }
 
   handleOptionClick(event) {
-    const toggle = event.target.closest('[data-option-toggle]');
+    const toggle = event.target.closest("[data-option-toggle]");
     if (toggle) {
-      const list = toggle.parentElement.querySelector('[data-option-list]');
-      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-      this.querySelectorAll('[data-option-toggle]').forEach((item) => {
-        item.setAttribute('aria-expanded', 'false');
-        item.parentElement.querySelector('[data-option-list]').hidden = true;
-      });
-      toggle.setAttribute('aria-expanded', String(!isOpen));
+      const list = toggle.parentElement.querySelector("[data-option-list]");
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      this.closeOptionLists();
+      if (!isOpen) {
+        // Keep the Figma dropdown below the control unless the visible dialog
+        // has too little space. The list scrolls internally without moving the panel.
+        const controlBounds = toggle.getBoundingClientRect();
+        const dialogBounds = this.dialog.getBoundingClientRect();
+        const below = Math.max(
+          0,
+          dialogBounds.bottom - controlBounds.bottom - 8,
+        );
+        const above = Math.max(0, controlBounds.top - dialogBounds.top - 8);
+        const desiredHeight = Math.min(100, list.children.length * 32);
+        const opensAbove = below < desiredHeight && above > below;
+        toggle.parentElement.dataset.placement = opensAbove ? "above" : "below";
+        list.style.maxHeight = `${Math.min(desiredHeight, Math.max(32, opensAbove ? above : below))}px`;
+      }
+      toggle.setAttribute("aria-expanded", String(!isOpen));
       list.hidden = isOpen;
       return;
     }
 
-    const choice = event.target.closest('[data-option-choice]');
+    const choice = event.target.closest("[data-option-choice]");
     if (!choice) return;
-    const toggleButton = this.querySelector(`[data-option-toggle][data-option-index="${choice.dataset.optionIndex}"]`);
+    const toggleButton = this.querySelector(
+      `[data-option-toggle][data-option-index="${choice.dataset.optionIndex}"]`,
+    );
     toggleButton.dataset.value = choice.value;
-    toggleButton.querySelector('[data-option-value]').textContent = choice.value;
-    toggleButton.setAttribute('aria-expanded', 'false');
+    toggleButton.querySelector("[data-option-value]").textContent =
+      choice.value;
+    toggleButton.setAttribute("aria-expanded", "false");
     choice.parentElement.hidden = true;
     this.updateVariant();
+  }
+
+  closeOptionLists() {
+    this.querySelectorAll("[data-option-toggle]").forEach((toggle) => {
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.parentElement.querySelector("[data-option-list]").hidden = true;
+    });
   }
 
   async addToCart(event) {
     event.preventDefault();
     if (!this.variant?.available) return;
-    const error = this.querySelector('[data-gift-error]');
-    const button = this.querySelector('[data-gift-submit]');
+    const error = this.querySelector("[data-gift-error]");
+    const button = this.querySelector("[data-gift-submit]");
     button.disabled = true;
-    error.textContent = '';
+    error.textContent = "";
 
     const items = [{ id: this.variant.id, quantity: 1 }];
-    const selectedValues = this.variant.options.map((value) => value.toLowerCase());
+    const selectedValues = this.variant.options.map((value) =>
+      value.toLowerCase(),
+    );
     const winterVariant = this.winterVariant;
-    const hasMediumSize = selectedValues.includes('medium') || selectedValues.includes('m');
-    if (selectedValues.includes('black') && hasMediumSize && winterVariant?.available) {
+    const hasMediumSize =
+      selectedValues.includes("medium") || selectedValues.includes("m");
+    if (
+      selectedValues.includes("black") &&
+      hasMediumSize &&
+      winterVariant?.available
+    ) {
       items.push({ id: winterVariant.id, quantity: 1 });
     }
 
     try {
-      const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ items })
+      const response = await fetch(window.Shopify.routes.root + "cart/add.js", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ items }),
       });
-      if (!response.ok) throw new Error('Unable to add this product to the cart.');
+      if (!response.ok)
+        throw new Error("Unable to add this product to the cart.");
       this.dialog.close();
-      window.location.assign(window.Shopify.routes.root + 'cart');
+      window.location.assign(window.Shopify.routes.root + "cart");
     } catch (exception) {
       error.textContent = exception.message;
       button.disabled = false;
@@ -156,42 +233,54 @@ class GiftGuide extends HTMLElement {
   }
 
   colorAccent(value) {
-    const accents = { blue: '#2460a7', red: '#a21038', grey: '#a7a7a7', gray: '#a7a7a7', white: '#111111', black: '#111111' };
-    return accents[value.toLowerCase()] || '#111111';
+    const accents = {
+      blue: "#2460a7",
+      red: "#a21038",
+      grey: "#a7a7a7",
+      gray: "#a7a7a7",
+      white: "#ffffff",
+      black: "#111111",
+    };
+    return accents[value.toLowerCase()] || "#111111";
   }
 
   escape(value) {
-    const element = document.createElement('span');
+    const element = document.createElement("span");
     element.textContent = value;
     return element.innerHTML;
   }
 }
 
-customElements.define('gift-guide', GiftGuide);
+customElements.define("gift-guide", GiftGuide);
 
-document.querySelectorAll('[data-gift-mobile-menu]').forEach((menu) => {
-  const toggle = menu.parentElement.querySelector('[data-gift-menu-toggle]');
-  const close = menu.querySelector('[data-gift-menu-close]');
+document.querySelectorAll("[data-gift-mobile-menu]").forEach((menu) => {
+  const toggle = menu.parentElement.querySelector("[data-gift-menu-toggle]");
+  const close = menu.querySelector("[data-gift-menu-close]");
   let closeTimer;
 
   const setOpen = (isOpen) => {
     window.clearTimeout(closeTimer);
     if (isOpen) {
       menu.hidden = false;
-      menu.setAttribute('aria-hidden', 'false');
-      toggle?.setAttribute('aria-expanded', 'true');
-      document.body.classList.add('gift-guide-menu-open');
-      requestAnimationFrame(() => menu.classList.add('is-open'));
+      menu.setAttribute("aria-hidden", "false");
+      toggle?.setAttribute("aria-expanded", "true");
+      document.body.classList.add("gift-guide-menu-open");
+      requestAnimationFrame(() => menu.classList.add("is-open"));
       return;
     }
 
-    menu.classList.remove('is-open');
-    menu.setAttribute('aria-hidden', 'true');
-    toggle?.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('gift-guide-menu-open');
-    closeTimer = window.setTimeout(() => { menu.hidden = true; }, 180);
+    menu.classList.remove("is-open");
+    menu.setAttribute("aria-hidden", "true");
+    toggle?.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("gift-guide-menu-open");
+    closeTimer = window.setTimeout(() => {
+      menu.hidden = true;
+    }, 180);
   };
 
-  toggle?.addEventListener('click', () => setOpen(true));
-  close?.addEventListener('click', () => setOpen(false));
+  toggle?.addEventListener("click", () => setOpen(true));
+  close?.addEventListener("click", () => setOpen(false));
+  menu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setOpen(false));
+  });
 });
